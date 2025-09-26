@@ -1,0 +1,78 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: xxc_interview_assistant
+  profiles:
+    active: local
+  mvc:
+    format:
+      date-time: yyyy-MM-dd HH:mm:ss
+      date: yyyy-MM-dd
+      time: HH:mm:ss
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+    tomcat:
+      uri-encoding: UTF-8
+      # 连接数满后的排队数
+      accept-count: 100
+      threads:
+        # tomcat最大线程数
+        max: 200
+        # Tomcat启动初始化的线程数
+        min-spare: 10
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://127.0.0.1:3306/xxc_interview_assistant?serverTimezone=Hongkong&useAffectedRows=true&characterEncoding=utf-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    filters: stat,wall
+
+    druid:
+      # 访问地址: http://localhost:8080/druid/
+      statViewServlet:
+        enabled: true
+        # 设置白名单，不填则允许所有访问
+        allow:
+        url-pattern: /druid/*
+        # 控制台管理用户名和密码
+        login-username: admin
+        login-password: 123456
+      filter:
+        stat:
+          # 启用统计功能
+          enabled: true
+          db-type: mysql
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+        wall:
+          enabled: true
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.xxc.xia.entity
+  configuration:
+    global-config:
+      db-config:
+        id-type: auto
+    map-underscore-to-camel-case: true
+
+springdoc:
+  packages-to-scan: com.xxc.xia.controller  # 扫描指定包下的控制器
+  swagger-ui:
+    path: /swagger-ui/index.html            # Swagger UI 访问路径
+    disable-swagger-default-url: true        # 隐藏默认示例接口
+  api-docs:
+    path: /v3/api-docs                      # OpenAPI 文档路径
+
+app:
+  check-perm:
+    enabled: false
