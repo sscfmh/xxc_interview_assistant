@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Tag(name = "权限表")
 @RestController
-@RequestMapping("/perm")
+@RequestMapping("/api/perm")
 public class PermController {
 
 

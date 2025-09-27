@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Tag(name = "角色权限关系表")
 @RestController
-@RequestMapping("/rolePermRel")
+@RequestMapping("/api/rolePermRel")
 public class RolePermRelController {
 
 

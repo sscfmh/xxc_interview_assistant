@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Tag(name = "用户角色关系表")
 @RestController
-@RequestMapping("/userRoleRel")
+@RequestMapping("/api/userRoleRel")
 public class UserRoleRelController {
 
 

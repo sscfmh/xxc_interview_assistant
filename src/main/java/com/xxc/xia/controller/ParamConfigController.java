@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Tag(name = "参数配置表")
 @RestController
-@RequestMapping("/paramConfig")
+@RequestMapping("/api/paramConfig")
 public class ParamConfigController {
 
 

@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  * @version 2025/9/25 21:27
  */
 @RestController
-@RequestMapping("/userAccount")
+@RequestMapping("/api/userAccount")
 public class UserAccountController {
 
     @Autowired
