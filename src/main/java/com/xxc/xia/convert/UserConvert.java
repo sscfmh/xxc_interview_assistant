@@ -37,6 +37,7 @@ public class UserConvert {
             return null;
         }
         User user = new User();
+        user.setId(userUpdateRequest.getId());
         user.setNickName(userUpdateRequest.getNickName());
         user.setEmail(userUpdateRequest.getEmail());
         user.setPhoneNumber(userUpdateRequest.getPhoneNumber());

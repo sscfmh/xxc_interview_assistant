@@ -33,6 +33,7 @@ public class UserFavConvert {
             return null;
         }
         UserFav userFav = new UserFav();
+        userFav.setId(userFavUpdateRequest.getId());
         userFav.setBizType(userFavUpdateRequest.getBizType());
         userFav.setBizId(userFavUpdateRequest.getBizId());
         userFav.setUserId(userFavUpdateRequest.getUserId());

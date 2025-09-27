@@ -35,6 +35,7 @@ public class ParamConfigConvert {
             return null;
         }
         ParamConfig paramConfig = new ParamConfig();
+        paramConfig.setId(paramConfigUpdateRequest.getId());
         paramConfig.setParamType(paramConfigUpdateRequest.getParamType());
         paramConfig.setParamKey(paramConfigUpdateRequest.getParamKey());
         paramConfig.setParamValue(paramConfigUpdateRequest.getParamValue());

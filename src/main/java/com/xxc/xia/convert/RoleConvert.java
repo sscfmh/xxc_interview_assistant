@@ -32,6 +32,7 @@ public class RoleConvert {
             return null;
         }
         Role role = new Role();
+        role.setId(roleUpdateRequest.getId());
         role.setRoleKey(roleUpdateRequest.getRoleKey());
         role.setRoleName(roleUpdateRequest.getRoleName());
         role.setExtendInfo(roleUpdateRequest.getExtendInfo());

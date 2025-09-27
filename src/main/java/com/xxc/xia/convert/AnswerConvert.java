@@ -33,6 +33,7 @@ public class AnswerConvert {
             return null;
         }
         Answer answer = new Answer();
+        answer.setId(answerUpdateRequest.getId());
         answer.setQuestionId(answerUpdateRequest.getQuestionId());
         answer.setUserId(answerUpdateRequest.getUserId());
         answer.setContent(answerUpdateRequest.getContent());

@@ -40,6 +40,7 @@ public class QuestionConvert {
             return null;
         }
         Question question = new Question();
+        question.setId(questionUpdateRequest.getId());
         question.setTitle(questionUpdateRequest.getTitle());
         question.setContent(questionUpdateRequest.getContent());
         question.setRefAnswer(questionUpdateRequest.getRefAnswer());

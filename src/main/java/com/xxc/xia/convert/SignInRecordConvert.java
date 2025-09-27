@@ -33,6 +33,7 @@ public class SignInRecordConvert {
             return null;
         }
         SignInRecord signInRecord = new SignInRecord();
+        signInRecord.setId(signInRecordUpdateRequest.getId());
         signInRecord.setBizType(signInRecordUpdateRequest.getBizType());
         signInRecord.setBizId(signInRecordUpdateRequest.getBizId());
         signInRecord.setYearMonth(signInRecordUpdateRequest.getYearMonth());

@@ -32,6 +32,7 @@ public class UserRoleRelConvert {
             return null;
         }
         UserRoleRel userRoleRel = new UserRoleRel();
+        userRoleRel.setId(userRoleRelUpdateRequest.getId());
         userRoleRel.setUserId(userRoleRelUpdateRequest.getUserId());
         userRoleRel.setRoleKey(userRoleRelUpdateRequest.getRoleKey());
         userRoleRel.setExtendInfo(userRoleRelUpdateRequest.getExtendInfo());

@@ -35,6 +35,7 @@ public class PermConvert {
             return null;
         }
         Perm perm = new Perm();
+        perm.setId(permUpdateRequest.getId());
         perm.setPermKey(permUpdateRequest.getPermKey());
         perm.setParentKey(permUpdateRequest.getParentKey());
         perm.setPermName(permUpdateRequest.getPermName());

@@ -37,6 +37,7 @@ public class QuestionCollectionConvert {
             return null;
         }
         QuestionCollection questionCollection = new QuestionCollection();
+        questionCollection.setId(questionCollectionUpdateRequest.getId());
         questionCollection.setTitle(questionCollectionUpdateRequest.getTitle());
         questionCollection.setOutline(questionCollectionUpdateRequest.getOutline());
         questionCollection.setUserId(questionCollectionUpdateRequest.getUserId());

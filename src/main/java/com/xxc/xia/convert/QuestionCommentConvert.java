@@ -38,6 +38,7 @@ public class QuestionCommentConvert {
             return null;
         }
         QuestionComment questionComment = new QuestionComment();
+        questionComment.setId(questionCommentUpdateRequest.getId());
         questionComment.setQuestionId(questionCommentUpdateRequest.getQuestionId());
         questionComment.setUserId(questionCommentUpdateRequest.getUserId());
         questionComment.setContent(questionCommentUpdateRequest.getContent());

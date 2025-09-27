@@ -32,6 +32,7 @@ public class RolePermRelConvert {
             return null;
         }
         RolePermRel rolePermRel = new RolePermRel();
+        rolePermRel.setId(rolePermRelUpdateRequest.getId());
         rolePermRel.setRoleKey(rolePermRelUpdateRequest.getRoleKey());
         rolePermRel.setPermKey(rolePermRelUpdateRequest.getPermKey());
         rolePermRel.setExtendInfo(rolePermRelUpdateRequest.getExtendInfo());

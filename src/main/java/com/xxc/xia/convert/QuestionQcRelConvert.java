@@ -32,6 +32,7 @@ public class QuestionQcRelConvert {
             return null;
         }
         QuestionQcRel questionQcRel = new QuestionQcRel();
+        questionQcRel.setId(questionQcRelUpdateRequest.getId());
         questionQcRel.setQuestionId(questionQcRelUpdateRequest.getQuestionId());
         questionQcRel.setQcId(questionQcRelUpdateRequest.getQcId());
         questionQcRel.setExtendInfo(questionQcRelUpdateRequest.getExtendInfo());
