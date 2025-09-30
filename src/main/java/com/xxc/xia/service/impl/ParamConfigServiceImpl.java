@@ -56,7 +56,7 @@ public class ParamConfigServiceImpl extends ServiceImpl<ParamConfigMapper, Param
         // 校验存在
         checkParamConfigExists(request.getId());
         // 更新
-        ParamConfig updateObj =  ParamConfigConvert.convert(request);
+        ParamConfig updateObj = ParamConfigConvert.convert(request);
         updateObj.setUpdateTime(new Date());
         paramConfigMapper.updateById(updateObj);
     }
@@ -115,33 +115,48 @@ public class ParamConfigServiceImpl extends ServiceImpl<ParamConfigMapper, Param
         // 主键ID
         lqw.eq(request.getId() != null, ParamConfig::getId, request.getId());
         // 参数类型
-        lqw.eq(StringUtils.isNotBlank(request.getParamType()), ParamConfig::getParamType, request.getParamType());
+        lqw.eq(StringUtils.isNotBlank(request.getParamType()), ParamConfig::getParamType,
+            request.getParamType());
         // 参数key
-        lqw.eq(StringUtils.isNotBlank(request.getParamKey()), ParamConfig::getParamKey, request.getParamKey());
+        lqw.eq(StringUtils.isNotBlank(request.getParamKey()), ParamConfig::getParamKey,
+            request.getParamKey());
         // 参数value
-        lqw.eq(StringUtils.isNotBlank(request.getParamValue()), ParamConfig::getParamValue, request.getParamValue());
+        lqw.eq(StringUtils.isNotBlank(request.getParamValue()), ParamConfig::getParamValue,
+            request.getParamValue());
         // value类型
-        lqw.eq(StringUtils.isNotBlank(request.getValueType()), ParamConfig::getValueType, request.getValueType());
+        lqw.eq(StringUtils.isNotBlank(request.getValueType()), ParamConfig::getValueType,
+            request.getValueType());
         // 是否公开
-        lqw.eq(StringUtils.isNotBlank(request.getPubFlag()), ParamConfig::getPubFlag, request.getPubFlag());
+        lqw.eq(StringUtils.isNotBlank(request.getPubFlag()), ParamConfig::getPubFlag,
+            request.getPubFlag());
         // 扩展信息
-        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), ParamConfig::getExtendInfo, request.getExtendInfo());
+        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), ParamConfig::getExtendInfo,
+            request.getExtendInfo());
         // 创建人
-        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), ParamConfig::getCreateBy, request.getCreateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), ParamConfig::getCreateBy,
+            request.getCreateBy());
         // 创建时间
-        lqw.eq(request.getCreateTime() != null, ParamConfig::getCreateTime, request.getCreateTime());
+        lqw.eq(request.getCreateTime() != null, ParamConfig::getCreateTime,
+            request.getCreateTime());
         // 创建时间 start
-        lqw.ge(request.getCreateTimeStart() != null, ParamConfig::getCreateTime, request.getCreateTimeStart());
+        lqw.ge(request.getCreateTimeStart() != null, ParamConfig::getCreateTime,
+            request.getCreateTimeStart());
         // 创建时间 end
-        lqw.le(request.getCreateTimeEnd() != null, ParamConfig::getCreateTime, request.getCreateTimeEnd());
+        lqw.le(request.getCreateTimeEnd() != null, ParamConfig::getCreateTime,
+            request.getCreateTimeEnd());
         // 修改人
-        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), ParamConfig::getUpdateBy, request.getUpdateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), ParamConfig::getUpdateBy,
+            request.getUpdateBy());
         // 修改时间
-        lqw.eq(request.getUpdateTime() != null, ParamConfig::getUpdateTime, request.getUpdateTime());
+        lqw.eq(request.getUpdateTime() != null, ParamConfig::getUpdateTime,
+            request.getUpdateTime());
         // 修改时间 start
-        lqw.ge(request.getUpdateTimeStart() != null, ParamConfig::getUpdateTime, request.getUpdateTimeStart());
+        lqw.ge(request.getUpdateTimeStart() != null, ParamConfig::getUpdateTime,
+            request.getUpdateTimeStart());
         // 修改时间 end
-        lqw.le(request.getUpdateTimeEnd() != null, ParamConfig::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.le(request.getUpdateTimeEnd() != null, ParamConfig::getUpdateTime,
+            request.getUpdateTimeEnd());
+        lqw.orderByDesc(ParamConfig::getUpdateTime, ParamConfig::getId);
         return paramConfigMapper.selectPage(request, lqw);
     }
 

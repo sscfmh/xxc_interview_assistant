@@ -5,6 +5,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.util.List;
+
 /**
  * 用户信息表 updateRequest
  *
@@ -21,4 +23,10 @@ public class UserUpdateRequest extends UserBaseDto {
      */
     @Schema(description = "主键ID")
     private Long id;
+
+    /**
+     * roles
+     */
+    @Schema(description = "roles")
+    private List<String> roles;
 }

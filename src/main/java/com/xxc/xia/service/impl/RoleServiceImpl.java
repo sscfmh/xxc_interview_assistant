@@ -1,6 +1,7 @@
 package com.xxc.xia.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xxc.xia.common.wrapper.PageWrapper;
 import com.xxc.xia.common.utils.AssertUtils;
@@ -134,7 +135,22 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> {
         lqw.ge(request.getUpdateTimeStart() != null, Role::getUpdateTime, request.getUpdateTimeStart());
         // 更新时间 end
         lqw.le(request.getUpdateTimeEnd() != null, Role::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.orderByDesc(Role::getId);
         return roleMapper.selectPage(request, lqw);
     }
 
+    /**
+     * 根据角色key查询
+     *
+     * @param roleKey
+     * @return
+     */
+    public Role queryByRoleKey(String roleKey) {
+        if (StringUtils.isBlank(roleKey)) {
+            return null;
+        }
+        return new LambdaQueryChainWrapper<>(baseMapper)
+                .eq(Role::getRoleKey, roleKey)
+                .one();
+    }
 }

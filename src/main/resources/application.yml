@@ -75,4 +75,4 @@ springdoc:
 
 app:
   check-perm:
-    enabled: false
+    enabled: true

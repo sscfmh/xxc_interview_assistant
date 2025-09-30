@@ -1,20 +1,27 @@
 package com.xxc.xia.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xxc.xia.common.wrapper.PageWrapper;
 import com.xxc.xia.common.utils.AssertUtils;
+import com.xxc.xia.common.wrapper.PageWrapper;
 import com.xxc.xia.convert.UserRoleRelConvert;
-import com.xxc.xia.dto.userrolerel.*;
+import com.xxc.xia.dto.userrolerel.UserRoleRelCreateRequest;
+import com.xxc.xia.dto.userrolerel.UserRoleRelPageRequest;
+import com.xxc.xia.dto.userrolerel.UserRoleRelUpdateRequest;
 import com.xxc.xia.entity.UserRoleRel;
 import com.xxc.xia.mapper.UserRoleRelMapper;
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.Resource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * 用户角色关系表 serviceImpl
@@ -54,7 +61,7 @@ public class UserRoleRelServiceImpl extends ServiceImpl<UserRoleRelMapper, UserR
         // 校验存在
         checkUserRoleRelExists(request.getId());
         // 更新
-        UserRoleRel updateObj =  UserRoleRelConvert.convert(request);
+        UserRoleRel updateObj = UserRoleRelConvert.convert(request);
         updateObj.setUpdateTime(new Date());
         userRoleRelMapper.updateById(updateObj);
     }
@@ -113,28 +120,64 @@ public class UserRoleRelServiceImpl extends ServiceImpl<UserRoleRelMapper, UserR
         // 主键ID
         lqw.eq(request.getId() != null, UserRoleRel::getId, request.getId());
         // 用户id
-        lqw.eq(StringUtils.isNotBlank(request.getUserId()), UserRoleRel::getUserId, request.getUserId());
+        lqw.eq(StringUtils.isNotBlank(request.getUserId()), UserRoleRel::getUserId,
+            request.getUserId());
         // 角色key
-        lqw.eq(StringUtils.isNotBlank(request.getRoleKey()), UserRoleRel::getRoleKey, request.getRoleKey());
+        lqw.eq(StringUtils.isNotBlank(request.getRoleKey()), UserRoleRel::getRoleKey,
+            request.getRoleKey());
         // 扩展信息
-        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), UserRoleRel::getExtendInfo, request.getExtendInfo());
+        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), UserRoleRel::getExtendInfo,
+            request.getExtendInfo());
         // 创建者
-        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), UserRoleRel::getCreateBy, request.getCreateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), UserRoleRel::getCreateBy,
+            request.getCreateBy());
         // 创建时间
-        lqw.eq(request.getCreateTime() != null, UserRoleRel::getCreateTime, request.getCreateTime());
+        lqw.eq(request.getCreateTime() != null, UserRoleRel::getCreateTime,
+            request.getCreateTime());
         // 创建时间 start
-        lqw.ge(request.getCreateTimeStart() != null, UserRoleRel::getCreateTime, request.getCreateTimeStart());
+        lqw.ge(request.getCreateTimeStart() != null, UserRoleRel::getCreateTime,
+            request.getCreateTimeStart());
         // 创建时间 end
-        lqw.le(request.getCreateTimeEnd() != null, UserRoleRel::getCreateTime, request.getCreateTimeEnd());
+        lqw.le(request.getCreateTimeEnd() != null, UserRoleRel::getCreateTime,
+            request.getCreateTimeEnd());
         // 更新者
-        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), UserRoleRel::getUpdateBy, request.getUpdateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), UserRoleRel::getUpdateBy,
+            request.getUpdateBy());
         // 更新时间
-        lqw.eq(request.getUpdateTime() != null, UserRoleRel::getUpdateTime, request.getUpdateTime());
+        lqw.eq(request.getUpdateTime() != null, UserRoleRel::getUpdateTime,
+            request.getUpdateTime());
         // 更新时间 start
-        lqw.ge(request.getUpdateTimeStart() != null, UserRoleRel::getUpdateTime, request.getUpdateTimeStart());
+        lqw.ge(request.getUpdateTimeStart() != null, UserRoleRel::getUpdateTime,
+            request.getUpdateTimeStart());
         // 更新时间 end
-        lqw.le(request.getUpdateTimeEnd() != null, UserRoleRel::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.le(request.getUpdateTimeEnd() != null, UserRoleRel::getUpdateTime,
+            request.getUpdateTimeEnd());
         return userRoleRelMapper.selectPage(request, lqw);
+    }
+
+    /**
+     * 根据用户ids查询
+     * @param userIdSet
+     * @return
+     */
+    public List<UserRoleRel> queryByUserIds(Set<Long> userIdSet) {
+        if (userIdSet == null || userIdSet.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<UserRoleRel> userRoleRelList = new LambdaQueryChainWrapper<>(baseMapper)
+            .in(UserRoleRel::getUserId, userIdSet).list();
+        return Optional.ofNullable(userRoleRelList).orElse(Collections.emptyList());
+    }
+
+    /**
+     * 根据用户id删除
+     * @param userId
+     * @return
+     */
+    public boolean deleteByUserId(Long userId) {
+        return new LambdaUpdateChainWrapper<>(baseMapper)
+                .eq(UserRoleRel::getUserId, userId)
+                .remove();
     }
 
 }

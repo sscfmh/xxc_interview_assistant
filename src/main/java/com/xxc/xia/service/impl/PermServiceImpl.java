@@ -140,6 +140,7 @@ public class PermServiceImpl extends ServiceImpl<PermMapper, Perm> {
         lqw.ge(request.getUpdateTimeStart() != null, Perm::getUpdateTime, request.getUpdateTimeStart());
         // 更新时间 end
         lqw.le(request.getUpdateTimeEnd() != null, Perm::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.orderByDesc(Perm::getId);
         return permMapper.selectPage(request, lqw);
     }
 

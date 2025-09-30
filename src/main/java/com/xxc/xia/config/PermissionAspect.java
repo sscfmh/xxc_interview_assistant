@@ -21,6 +21,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * desc..
@@ -67,19 +68,21 @@ public class PermissionAspect {
             AssertUtils.isTrue(StringUtils.isNotBlank(token), "token 已过期或不合法");
             // AssertUtils.isTrue(LoginContext.isValidToken(token), "token 已过期或不合法");
             AssertUtils.notNull(userLoginInfo, "token 已过期或不合法");
-            AssertUtils.notEmpty(userLoginInfo.getPermissions(), "没有权限访问该资源");
+            List<String> permissions = userLoginInfo.getPermissions();
             boolean hasPerm = false;
-            for (String perm : requirePermissions.value()) {
-                if (requirePermissions.logical() == Logical.OR) {
-                    if (userLoginInfo.getPermissions().contains(perm)) {
+            if (permissions != null) {
+                for (String perm : requirePermissions.value()) {
+                    if (requirePermissions.logical() == Logical.OR) {
+                        if (permissions.contains(perm)) {
+                            hasPerm = true;
+                            break;
+                        }
+                    } else {
                         hasPerm = true;
-                        break;
-                    }
-                } else {
-                    hasPerm = true;
-                    if (!userLoginInfo.getPermissions().contains(perm)) {
-                        hasPerm = false;
-                        break;
+                        if (!permissions.contains(perm)) {
+                            hasPerm = false;
+                            break;
+                        }
                     }
                 }
             }

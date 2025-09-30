@@ -56,7 +56,7 @@ public class UserAccountController {
     private RolePermRelServiceImpl rolePermRelService;
 
     @PostMapping("/login")
-    private Result<UserLoginInfo> login(@RequestBody @Validated LoginRequest request) {
+    public Result<UserLoginInfo> login(@RequestBody @Validated LoginRequest request) {
         User user = userService.getUser(Long.valueOf(request.getUserId()));
         AssertUtils.notNull(user, "用户名或密码不正确");
         AssertUtils.isTrue(user.getPassword().equals(request.getPassword()), "用户名或密码不正确");
