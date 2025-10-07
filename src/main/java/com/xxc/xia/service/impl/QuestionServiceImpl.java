@@ -150,6 +150,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> {
         lqw.ge(request.getUpdateTimeStart() != null, Question::getUpdateTime, request.getUpdateTimeStart());
         // 修改时间 end
         lqw.le(request.getUpdateTimeEnd() != null, Question::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.orderByDesc(Question::getId);
         return questionMapper.selectPage(request, lqw);
     }
 

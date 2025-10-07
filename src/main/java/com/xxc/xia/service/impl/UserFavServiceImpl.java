@@ -136,6 +136,7 @@ public class UserFavServiceImpl extends ServiceImpl<UserFavMapper, UserFav> {
         lqw.ge(request.getUpdateTimeStart() != null, UserFav::getUpdateTime, request.getUpdateTimeStart());
         // 修改时间 end
         lqw.le(request.getUpdateTimeEnd() != null, UserFav::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.orderByDesc(UserFav::getId);
         return userFavMapper.selectPage(request, lqw);
     }
 

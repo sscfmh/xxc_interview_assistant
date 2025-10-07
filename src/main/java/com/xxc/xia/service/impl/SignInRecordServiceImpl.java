@@ -136,6 +136,7 @@ public class SignInRecordServiceImpl extends ServiceImpl<SignInRecordMapper, Sig
         lqw.ge(request.getUpdateTimeStart() != null, SignInRecord::getUpdateTime, request.getUpdateTimeStart());
         // 更新时间 end
         lqw.le(request.getUpdateTimeEnd() != null, SignInRecord::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.orderByDesc(SignInRecord::getId);
         return signInRecordMapper.selectPage(request, lqw);
     }
 

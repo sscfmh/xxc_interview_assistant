@@ -134,6 +134,7 @@ public class QuestionQcRelServiceImpl extends ServiceImpl<QuestionQcRelMapper, Q
         lqw.ge(request.getUpdateTimeStart() != null, QuestionQcRel::getUpdateTime, request.getUpdateTimeStart());
         // 修改时间 end
         lqw.le(request.getUpdateTimeEnd() != null, QuestionQcRel::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.orderByDesc(QuestionQcRel::getId);
         return questionQcRelMapper.selectPage(request, lqw);
     }
 

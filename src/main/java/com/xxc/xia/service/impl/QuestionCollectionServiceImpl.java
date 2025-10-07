@@ -144,6 +144,7 @@ public class QuestionCollectionServiceImpl extends ServiceImpl<QuestionCollectio
         lqw.ge(request.getUpdateTimeStart() != null, QuestionCollection::getUpdateTime, request.getUpdateTimeStart());
         // 修改时间 end
         lqw.le(request.getUpdateTimeEnd() != null, QuestionCollection::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.orderByDesc(QuestionCollection::getId);
         return questionCollectionMapper.selectPage(request, lqw);
     }
 

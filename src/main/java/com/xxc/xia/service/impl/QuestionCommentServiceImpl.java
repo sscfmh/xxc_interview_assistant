@@ -146,6 +146,7 @@ public class QuestionCommentServiceImpl extends ServiceImpl<QuestionCommentMappe
         lqw.ge(request.getUpdateTimeStart() != null, QuestionComment::getUpdateTime, request.getUpdateTimeStart());
         // 修改时间 end
         lqw.le(request.getUpdateTimeEnd() != null, QuestionComment::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.orderByDesc(QuestionComment::getId);
         return questionCommentMapper.selectPage(request, lqw);
     }
 

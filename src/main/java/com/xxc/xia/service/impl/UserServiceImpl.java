@@ -189,6 +189,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> {
             request.getUpdateTimeStart());
         // 更新时间 end
         lqw.le(request.getUpdateTimeEnd() != null, User::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.orderByDesc(User::getId);
         return userMapper.selectPage(request, lqw);
     }
 

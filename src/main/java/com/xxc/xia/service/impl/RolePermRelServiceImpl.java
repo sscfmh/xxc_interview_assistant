@@ -134,6 +134,7 @@ public class RolePermRelServiceImpl extends ServiceImpl<RolePermRelMapper, RoleP
         lqw.ge(request.getUpdateTimeStart() != null, RolePermRel::getUpdateTime, request.getUpdateTimeStart());
         // 更新时间 end
         lqw.le(request.getUpdateTimeEnd() != null, RolePermRel::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.orderByDesc(RolePermRel::getId);
         return rolePermRelMapper.selectPage(request, lqw);
     }
 

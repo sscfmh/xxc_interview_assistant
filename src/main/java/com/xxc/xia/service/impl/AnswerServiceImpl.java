@@ -136,6 +136,7 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, Answer> {
         lqw.ge(request.getUpdateTimeStart() != null, Answer::getUpdateTime, request.getUpdateTimeStart());
         // 修改时间 end
         lqw.le(request.getUpdateTimeEnd() != null, Answer::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.orderByDesc(Answer::getId);
         return answerMapper.selectPage(request, lqw);
     }
 

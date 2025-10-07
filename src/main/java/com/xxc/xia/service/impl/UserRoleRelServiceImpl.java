@@ -152,6 +152,7 @@ public class UserRoleRelServiceImpl extends ServiceImpl<UserRoleRelMapper, UserR
         // 更新时间 end
         lqw.le(request.getUpdateTimeEnd() != null, UserRoleRel::getUpdateTime,
             request.getUpdateTimeEnd());
+        lqw.orderByDesc(UserRoleRel::getId);
         return userRoleRelMapper.selectPage(request, lqw);
     }
 
