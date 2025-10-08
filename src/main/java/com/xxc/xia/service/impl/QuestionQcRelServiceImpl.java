@@ -1,17 +1,21 @@
 package com.xxc.xia.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xxc.xia.common.wrapper.PageWrapper;
 import com.xxc.xia.common.utils.AssertUtils;
+import com.xxc.xia.common.wrapper.PageWrapper;
 import com.xxc.xia.convert.QuestionQcRelConvert;
-import com.xxc.xia.dto.questionqcrel.*;
+import com.xxc.xia.dto.questionqcrel.QuestionQcRelCreateRequest;
+import com.xxc.xia.dto.questionqcrel.QuestionQcRelPageRequest;
+import com.xxc.xia.dto.questionqcrel.QuestionQcRelUpdateRequest;
 import com.xxc.xia.entity.QuestionQcRel;
 import com.xxc.xia.mapper.QuestionQcRelMapper;
+import jakarta.annotation.Resource;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +58,7 @@ public class QuestionQcRelServiceImpl extends ServiceImpl<QuestionQcRelMapper, Q
         // 校验存在
         checkQuestionQcRelExists(request.getId());
         // 更新
-        QuestionQcRel updateObj =  QuestionQcRelConvert.convert(request);
+        QuestionQcRel updateObj = QuestionQcRelConvert.convert(request);
         updateObj.setUpdateTime(new Date());
         questionQcRelMapper.updateById(updateObj);
     }
@@ -113,29 +117,53 @@ public class QuestionQcRelServiceImpl extends ServiceImpl<QuestionQcRelMapper, Q
         // 主键ID
         lqw.eq(request.getId() != null, QuestionQcRel::getId, request.getId());
         // 题目ID
-        lqw.eq(StringUtils.isNotBlank(request.getQuestionId()), QuestionQcRel::getQuestionId, request.getQuestionId());
+        lqw.eq(StringUtils.isNotBlank(request.getQuestionId()), QuestionQcRel::getQuestionId,
+            request.getQuestionId());
         // 题集ID
-        lqw.eq(StringUtils.isNotBlank(request.getQcId()), QuestionQcRel::getQcId, request.getQcId());
+        lqw.eq(StringUtils.isNotBlank(request.getQcId()), QuestionQcRel::getQcId,
+            request.getQcId());
         // 扩展信息
-        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), QuestionQcRel::getExtendInfo, request.getExtendInfo());
+        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), QuestionQcRel::getExtendInfo,
+            request.getExtendInfo());
         // 创建人
-        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), QuestionQcRel::getCreateBy, request.getCreateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), QuestionQcRel::getCreateBy,
+            request.getCreateBy());
         // 创建时间
-        lqw.eq(request.getCreateTime() != null, QuestionQcRel::getCreateTime, request.getCreateTime());
+        lqw.eq(request.getCreateTime() != null, QuestionQcRel::getCreateTime,
+            request.getCreateTime());
         // 创建时间 start
-        lqw.ge(request.getCreateTimeStart() != null, QuestionQcRel::getCreateTime, request.getCreateTimeStart());
+        lqw.ge(request.getCreateTimeStart() != null, QuestionQcRel::getCreateTime,
+            request.getCreateTimeStart());
         // 创建时间 end
-        lqw.le(request.getCreateTimeEnd() != null, QuestionQcRel::getCreateTime, request.getCreateTimeEnd());
+        lqw.le(request.getCreateTimeEnd() != null, QuestionQcRel::getCreateTime,
+            request.getCreateTimeEnd());
         // 修改人
-        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), QuestionQcRel::getUpdateBy, request.getUpdateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), QuestionQcRel::getUpdateBy,
+            request.getUpdateBy());
         // 修改时间
-        lqw.eq(request.getUpdateTime() != null, QuestionQcRel::getUpdateTime, request.getUpdateTime());
+        lqw.eq(request.getUpdateTime() != null, QuestionQcRel::getUpdateTime,
+            request.getUpdateTime());
         // 修改时间 start
-        lqw.ge(request.getUpdateTimeStart() != null, QuestionQcRel::getUpdateTime, request.getUpdateTimeStart());
+        lqw.ge(request.getUpdateTimeStart() != null, QuestionQcRel::getUpdateTime,
+            request.getUpdateTimeStart());
         // 修改时间 end
-        lqw.le(request.getUpdateTimeEnd() != null, QuestionQcRel::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.le(request.getUpdateTimeEnd() != null, QuestionQcRel::getUpdateTime,
+            request.getUpdateTimeEnd());
         lqw.orderByDesc(QuestionQcRel::getId);
         return questionQcRelMapper.selectPage(request, lqw);
+    }
+
+    /**
+     * 删除QuestionQcRel
+     * @param qcId
+     * @param questionIds
+     */
+    public void deleteByQcIdAndQuestionId(Long qcId, List<Long> questionIds) {
+        if (ObjectUtils.anyNull(qcId, questionIds) || questionIds.isEmpty()) {
+            return;
+        }
+        new LambdaUpdateChainWrapper<>(baseMapper).eq(QuestionQcRel::getQcId, qcId)
+            .in(QuestionQcRel::getQuestionId, questionIds).remove();
     }
 
 }

@@ -1,6 +1,8 @@
 package com.xxc.xia.dto.questioncollection;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.springframework.format.annotation.DateTimeFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -33,6 +35,7 @@ public class QuestionCollectionBaseDto implements Serializable {
     /**
      * 用户ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Schema(description = "用户ID")
     private String userId;
 

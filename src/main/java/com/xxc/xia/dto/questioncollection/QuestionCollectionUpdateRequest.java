@@ -5,6 +5,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.util.List;
+
 /**
  * 题集 updateRequest
  *
@@ -21,4 +23,14 @@ public class QuestionCollectionUpdateRequest extends QuestionCollectionBaseDto {
      */
     @Schema(description = "主键ID")
     private Long id;
+
+    /**
+     * 删除的题目ID
+     */
+    private List<String> deleteQuestionIds;
+
+    /**
+     * 新增的题目ID
+     */
+    private List<String> addQuestionIds;
 }

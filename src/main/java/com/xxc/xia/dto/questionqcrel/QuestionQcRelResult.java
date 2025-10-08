@@ -1,5 +1,6 @@
 package com.xxc.xia.dto.questionqcrel;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -43,4 +44,16 @@ public class QuestionQcRelResult extends QuestionQcRelBaseDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
+
+    /**
+     * 标题
+     */
+    @TableField("title")
+    private String title;
+
+    /**
+     * 内容
+     */
+    @TableField("content")
+    private String content;
 }

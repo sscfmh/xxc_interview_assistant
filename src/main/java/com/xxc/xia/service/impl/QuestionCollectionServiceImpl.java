@@ -2,16 +2,21 @@ package com.xxc.xia.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xxc.xia.common.wrapper.PageWrapper;
 import com.xxc.xia.common.utils.AssertUtils;
+import com.xxc.xia.common.wrapper.PageWrapper;
 import com.xxc.xia.convert.QuestionCollectionConvert;
-import com.xxc.xia.dto.questioncollection.*;
+import com.xxc.xia.dto.questioncollection.QuestionCollectionCreateRequest;
+import com.xxc.xia.dto.questioncollection.QuestionCollectionPageRequest;
+import com.xxc.xia.dto.questioncollection.QuestionCollectionUpdateRequest;
+import com.xxc.xia.dto.questionqcrel.QuestionQcRelCreateRequest;
 import com.xxc.xia.entity.QuestionCollection;
 import com.xxc.xia.mapper.QuestionCollectionMapper;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -23,10 +28,17 @@ import java.util.List;
  * @create 2025-09-27 12:09:35
  */
 @Service
-public class QuestionCollectionServiceImpl extends ServiceImpl<QuestionCollectionMapper, QuestionCollection> {
+public class QuestionCollectionServiceImpl extends
+                                           ServiceImpl<QuestionCollectionMapper, QuestionCollection> {
 
     @Resource
     private QuestionCollectionMapper questionCollectionMapper;
+
+    @Autowired
+    private TransactionTemplate      transactionTemplate;
+
+    @Autowired
+    private QuestionQcRelServiceImpl questionQcRelService;
 
     /**
      * 创建QuestionCollection
@@ -54,9 +66,23 @@ public class QuestionCollectionServiceImpl extends ServiceImpl<QuestionCollectio
         // 校验存在
         checkQuestionCollectionExists(request.getId());
         // 更新
-        QuestionCollection updateObj =  QuestionCollectionConvert.convert(request);
+        QuestionCollection updateObj = QuestionCollectionConvert.convert(request);
         updateObj.setUpdateTime(new Date());
-        questionCollectionMapper.updateById(updateObj);
+        transactionTemplate.executeWithoutResult(status -> {
+            questionCollectionMapper.updateById(updateObj);
+            if (request.getDeleteQuestionIds() != null) {
+                questionQcRelService.deleteByQcIdAndQuestionId(updateObj.getId(),
+                    request.getDeleteQuestionIds().stream().map(Long::valueOf).toList());
+            }
+            if (request.getAddQuestionIds() != null) {
+                for (String addQuestionId : request.getAddQuestionIds()) {
+                    QuestionQcRelCreateRequest createRequest = new QuestionQcRelCreateRequest();
+                    createRequest.setQuestionId(addQuestionId);
+                    createRequest.setQcId(updateObj.getId().toString());
+                    questionQcRelService.createQuestionQcRel(createRequest);
+                }
+            }
+        });
     }
 
     /**
@@ -113,37 +139,52 @@ public class QuestionCollectionServiceImpl extends ServiceImpl<QuestionCollectio
         // 主键ID
         lqw.eq(request.getId() != null, QuestionCollection::getId, request.getId());
         // 标题
-        lqw.eq(StringUtils.isNotBlank(request.getTitle()), QuestionCollection::getTitle, request.getTitle());
+        lqw.eq(StringUtils.isNotBlank(request.getTitle()), QuestionCollection::getTitle,
+            request.getTitle());
         // 摘要
-        lqw.eq(StringUtils.isNotBlank(request.getOutline()), QuestionCollection::getOutline, request.getOutline());
+        lqw.eq(StringUtils.isNotBlank(request.getOutline()), QuestionCollection::getOutline,
+            request.getOutline());
         // 用户ID
-        lqw.eq(StringUtils.isNotBlank(request.getUserId()), QuestionCollection::getUserId, request.getUserId());
+        lqw.eq(StringUtils.isNotBlank(request.getUserId()), QuestionCollection::getUserId,
+            request.getUserId());
         // 封面图片
-        lqw.eq(StringUtils.isNotBlank(request.getImgUrl()), QuestionCollection::getImgUrl, request.getImgUrl());
+        lqw.eq(StringUtils.isNotBlank(request.getImgUrl()), QuestionCollection::getImgUrl,
+            request.getImgUrl());
         // 收藏量
         lqw.eq(request.getFavCnt() != null, QuestionCollection::getFavCnt, request.getFavCnt());
         // 创建来源
-        lqw.eq(StringUtils.isNotBlank(request.getCreateSource()), QuestionCollection::getCreateSource, request.getCreateSource());
+        lqw.eq(StringUtils.isNotBlank(request.getCreateSource()),
+            QuestionCollection::getCreateSource, request.getCreateSource());
         // 标签
-        lqw.eq(StringUtils.isNotBlank(request.getTags()), QuestionCollection::getTags, request.getTags());
+        lqw.eq(StringUtils.isNotBlank(request.getTags()), QuestionCollection::getTags,
+            request.getTags());
         // 扩展信息
-        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), QuestionCollection::getExtendInfo, request.getExtendInfo());
+        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), QuestionCollection::getExtendInfo,
+            request.getExtendInfo());
         // 创建人
-        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), QuestionCollection::getCreateBy, request.getCreateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), QuestionCollection::getCreateBy,
+            request.getCreateBy());
         // 创建时间
-        lqw.eq(request.getCreateTime() != null, QuestionCollection::getCreateTime, request.getCreateTime());
+        lqw.eq(request.getCreateTime() != null, QuestionCollection::getCreateTime,
+            request.getCreateTime());
         // 创建时间 start
-        lqw.ge(request.getCreateTimeStart() != null, QuestionCollection::getCreateTime, request.getCreateTimeStart());
+        lqw.ge(request.getCreateTimeStart() != null, QuestionCollection::getCreateTime,
+            request.getCreateTimeStart());
         // 创建时间 end
-        lqw.le(request.getCreateTimeEnd() != null, QuestionCollection::getCreateTime, request.getCreateTimeEnd());
+        lqw.le(request.getCreateTimeEnd() != null, QuestionCollection::getCreateTime,
+            request.getCreateTimeEnd());
         // 修改人
-        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), QuestionCollection::getUpdateBy, request.getUpdateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), QuestionCollection::getUpdateBy,
+            request.getUpdateBy());
         // 修改时间
-        lqw.eq(request.getUpdateTime() != null, QuestionCollection::getUpdateTime, request.getUpdateTime());
+        lqw.eq(request.getUpdateTime() != null, QuestionCollection::getUpdateTime,
+            request.getUpdateTime());
         // 修改时间 start
-        lqw.ge(request.getUpdateTimeStart() != null, QuestionCollection::getUpdateTime, request.getUpdateTimeStart());
+        lqw.ge(request.getUpdateTimeStart() != null, QuestionCollection::getUpdateTime,
+            request.getUpdateTimeStart());
         // 修改时间 end
-        lqw.le(request.getUpdateTimeEnd() != null, QuestionCollection::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.le(request.getUpdateTimeEnd() != null, QuestionCollection::getUpdateTime,
+            request.getUpdateTimeEnd());
         lqw.orderByDesc(QuestionCollection::getId);
         return questionCollectionMapper.selectPage(request, lqw);
     }
