@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 题目 pageReqVo
@@ -152,5 +153,16 @@ public class QuestionPageRequest extends PageRequest {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTimeEnd;
+
+
+    /**
+     * 标签ID 数组
+     */
+    private List<String> tagIds;
+
+    /**
+     * 标签ID 操作类型
+     */
+    private String tagIdsOpType;
 
 }

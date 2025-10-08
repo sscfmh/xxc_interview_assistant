@@ -10,6 +10,7 @@ import com.xxc.xia.dto.questioncollection.QuestionCollectionPageRequest;
 import com.xxc.xia.dto.questioncollection.QuestionCollectionUpdateRequest;
 import com.xxc.xia.dto.questionqcrel.QuestionQcRelCreateRequest;
 import com.xxc.xia.entity.QuestionCollection;
+import com.xxc.xia.entity.QuestionQcRel;
 import com.xxc.xia.mapper.QuestionCollectionMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
@@ -76,6 +77,12 @@ public class QuestionCollectionServiceImpl extends
             }
             if (request.getAddQuestionIds() != null) {
                 for (String addQuestionId : request.getAddQuestionIds()) {
+                    QuestionQcRel questionQcRel = questionQcRelService
+                        .queryQuestionQcRelByQcIdAndQuestionId(String.valueOf(updateObj.getId()),
+                            addQuestionId);
+                    if (questionQcRel != null) {
+                        continue;
+                    }
                     QuestionQcRelCreateRequest createRequest = new QuestionQcRelCreateRequest();
                     createRequest.setQuestionId(addQuestionId);
                     createRequest.setQcId(updateObj.getId().toString());

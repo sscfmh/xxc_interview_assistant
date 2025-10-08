@@ -1,6 +1,7 @@
 package com.xxc.xia.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xxc.xia.common.utils.AssertUtils;
@@ -164,6 +165,20 @@ public class QuestionQcRelServiceImpl extends ServiceImpl<QuestionQcRelMapper, Q
         }
         new LambdaUpdateChainWrapper<>(baseMapper).eq(QuestionQcRel::getQcId, qcId)
             .in(QuestionQcRel::getQuestionId, questionIds).remove();
+    }
+
+    /**
+     * 查询QuestionQcRel
+     * @param qcId
+     * @param questionIds
+     * @return
+     */
+    public QuestionQcRel queryQuestionQcRelByQcIdAndQuestionId(String qcId, String questionIds) {
+        if (StringUtils.isAnyBlank(qcId, questionIds)) {
+            return null;
+        }
+        return new LambdaQueryChainWrapper<>(baseMapper).eq(QuestionQcRel::getQcId, qcId)
+            .in(QuestionQcRel::getQuestionId, questionIds).one();
     }
 
 }
