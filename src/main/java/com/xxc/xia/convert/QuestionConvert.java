@@ -26,6 +26,7 @@ public class QuestionConvert {
         question.setUserId(questionCreateRequest.getUserId());
         question.setQuestionLevel(questionCreateRequest.getQuestionLevel());
         question.setTags(questionCreateRequest.getTags());
+        question.setQuestionNo(questionCreateRequest.getQuestionNo());
         question.setViewCnt(questionCreateRequest.getViewCnt());
         question.setCommitAnswerCnt(questionCreateRequest.getCommitAnswerCnt());
         question.setFavCnt(questionCreateRequest.getFavCnt());
@@ -48,6 +49,7 @@ public class QuestionConvert {
         question.setUserId(questionUpdateRequest.getUserId());
         question.setQuestionLevel(questionUpdateRequest.getQuestionLevel());
         question.setTags(questionUpdateRequest.getTags());
+        question.setQuestionNo(questionUpdateRequest.getQuestionNo());
         question.setViewCnt(questionUpdateRequest.getViewCnt());
         question.setCommitAnswerCnt(questionUpdateRequest.getCommitAnswerCnt());
         question.setFavCnt(questionUpdateRequest.getFavCnt());
@@ -70,6 +72,7 @@ public class QuestionConvert {
         questionResult.setUserId(entity.getUserId());
         questionResult.setQuestionLevel(entity.getQuestionLevel());
         questionResult.setTags(entity.getTags());
+        questionResult.setQuestionNo(entity.getQuestionNo());
         questionResult.setViewCnt(entity.getViewCnt());
         questionResult.setCommitAnswerCnt(entity.getCommitAnswerCnt());
         questionResult.setFavCnt(entity.getFavCnt());

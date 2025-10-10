@@ -67,6 +67,12 @@ public class Question extends BaseEntity {
     private String tags;
 
     /**
+     * 题号
+     */
+    @TableField("question_no")
+    private Integer questionNo;
+
+    /**
      * 访问量
      */
     @TableField("view_cnt")

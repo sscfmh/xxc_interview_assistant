@@ -71,6 +71,12 @@ public class QuestionPageRequest extends PageRequest {
     private String tags;
 
     /**
+     * 题号
+     */
+    @Schema(description = "题号")
+    private Integer questionNo;
+
+    /**
      * 访问量
      */
     @Schema(description = "访问量")
@@ -164,5 +170,10 @@ public class QuestionPageRequest extends PageRequest {
      * 标签ID 操作类型
      */
     private String tagIdsOpType;
+
+    /**
+     * 需要是否已回答标识
+     */
+    private boolean needAlreadyAnswerFlag;
 
 }

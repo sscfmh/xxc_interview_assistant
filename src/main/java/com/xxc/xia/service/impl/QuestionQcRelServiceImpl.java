@@ -123,6 +123,9 @@ public class QuestionQcRelServiceImpl extends ServiceImpl<QuestionQcRelMapper, Q
         // 题集ID
         lqw.eq(StringUtils.isNotBlank(request.getQcId()), QuestionQcRel::getQcId,
             request.getQcId());
+        // 题号
+        lqw.eq(request.getQuestionNo() != null, QuestionQcRel::getQuestionNo,
+            request.getQuestionNo());
         // 扩展信息
         lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), QuestionQcRel::getExtendInfo,
             request.getExtendInfo());

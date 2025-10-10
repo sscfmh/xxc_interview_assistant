@@ -3,11 +3,12 @@ package com.xxc.xia.dto.question;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import org.springframework.format.annotation.DateTimeFormat;
-import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -26,7 +27,7 @@ public class QuestionResult extends QuestionBaseDto {
      */
     @JsonSerialize(using = ToStringSerializer.class)
     @Schema(description = "主键ID")
-    private Long id;
+    private Long    id;
 
     /**
      * 创建时间
@@ -34,7 +35,7 @@ public class QuestionResult extends QuestionBaseDto {
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
+    private Date    createTime;
 
     /**
      * 更新时间
@@ -42,5 +43,11 @@ public class QuestionResult extends QuestionBaseDto {
     @Schema(description = "更新时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
+    private Date    updateTime;
+
+    /**
+     * 是否已提交答案
+     */
+    @Schema(description = "是否已提交答案")
+    private boolean alreadyAnswer;
 }

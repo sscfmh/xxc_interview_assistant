@@ -1,5 +1,6 @@
 package com.xxc.xia.dto.question;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -59,6 +60,12 @@ public class QuestionBaseDto implements Serializable {
      */
     @Schema(description = "标签")
     private String tags;
+
+    /**
+     * 题号
+     */
+    @Schema(description = "题号")
+    private Integer questionNo;
 
     /**
      * 访问量

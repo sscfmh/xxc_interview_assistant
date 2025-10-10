@@ -21,6 +21,7 @@ public class QuestionQcRelConvert {
         QuestionQcRel questionQcRel = new QuestionQcRel();
         questionQcRel.setQuestionId(questionQcRelCreateRequest.getQuestionId());
         questionQcRel.setQcId(questionQcRelCreateRequest.getQcId());
+        questionQcRel.setQuestionNo(questionQcRelCreateRequest.getQuestionNo());
         questionQcRel.setExtendInfo(questionQcRelCreateRequest.getExtendInfo());
         questionQcRel.setCreateBy(questionQcRelCreateRequest.getCreateBy());
         questionQcRel.setUpdateBy(questionQcRelCreateRequest.getUpdateBy());
@@ -35,6 +36,7 @@ public class QuestionQcRelConvert {
         questionQcRel.setId(questionQcRelUpdateRequest.getId());
         questionQcRel.setQuestionId(questionQcRelUpdateRequest.getQuestionId());
         questionQcRel.setQcId(questionQcRelUpdateRequest.getQcId());
+        questionQcRel.setQuestionNo(questionQcRelUpdateRequest.getQuestionNo());
         questionQcRel.setExtendInfo(questionQcRelUpdateRequest.getExtendInfo());
         questionQcRel.setCreateBy(questionQcRelUpdateRequest.getCreateBy());
         questionQcRel.setUpdateBy(questionQcRelUpdateRequest.getUpdateBy());
@@ -49,6 +51,7 @@ public class QuestionQcRelConvert {
         questionQcRelResult.setId(entity.getId());
         questionQcRelResult.setQuestionId(entity.getQuestionId());
         questionQcRelResult.setQcId(entity.getQcId());
+        questionQcRelResult.setQuestionNo(entity.getQuestionNo());
         questionQcRelResult.setExtendInfo(entity.getExtendInfo());
         questionQcRelResult.setCreateBy(entity.getCreateBy());
         questionQcRelResult.setCreateTime(entity.getCreateTime());

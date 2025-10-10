@@ -1,17 +1,26 @@
 package com.xxc.xia.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xxc.xia.common.wrapper.PageWrapper;
+import com.xxc.xia.client.msg.LocalMsgClient;
+import com.xxc.xia.common.enums.MsgTypeEnum;
 import com.xxc.xia.common.utils.AssertUtils;
+import com.xxc.xia.common.wrapper.PageWrapper;
 import com.xxc.xia.convert.AnswerConvert;
-import com.xxc.xia.dto.answer.*;
+import com.xxc.xia.dto.answer.AnswerCreateRequest;
+import com.xxc.xia.dto.answer.AnswerPageRequest;
+import com.xxc.xia.dto.answer.AnswerUpdateRequest;
 import com.xxc.xia.entity.Answer;
 import com.xxc.xia.mapper.AnswerMapper;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -26,7 +35,13 @@ import java.util.List;
 public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, Answer> {
 
     @Resource
-    private AnswerMapper answerMapper;
+    private AnswerMapper        answerMapper;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private LocalMsgClient      localMsgClient;
 
     /**
      * 创建Answer
@@ -39,7 +54,14 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, Answer> {
         Answer answer = AnswerConvert.convert(request);
         answer.setCreateTime(new Date());
         answer.setUpdateTime(new Date());
-        answerMapper.insert(answer);
+        transactionTemplate.executeWithoutResult(status -> {
+            answerMapper.insert(answer);
+            if (request.isNeedSendAnswerQuestionMsg()) {
+                JSONObject msg = (JSONObject) JSON.toJSON(answer);
+                localMsgClient.sendMsg(MsgTypeEnum.USER_ANSWER_QUESTION, msg);
+            }
+        });
+
         // 返回
         return answer.getId();
     }
@@ -54,7 +76,7 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, Answer> {
         // 校验存在
         checkAnswerExists(request.getId());
         // 更新
-        Answer updateObj =  AnswerConvert.convert(request);
+        Answer updateObj = AnswerConvert.convert(request);
         updateObj.setUpdateTime(new Date());
         answerMapper.updateById(updateObj);
     }
@@ -113,31 +135,52 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, Answer> {
         // 主键ID
         lqw.eq(request.getId() != null, Answer::getId, request.getId());
         // 题目ID
-        lqw.eq(StringUtils.isNotBlank(request.getQuestionId()), Answer::getQuestionId, request.getQuestionId());
+        lqw.eq(StringUtils.isNotBlank(request.getQuestionId()), Answer::getQuestionId,
+            request.getQuestionId());
         // 用户ID
         lqw.eq(StringUtils.isNotBlank(request.getUserId()), Answer::getUserId, request.getUserId());
         // 内容
-        lqw.eq(StringUtils.isNotBlank(request.getContent()), Answer::getContent, request.getContent());
+        lqw.eq(StringUtils.isNotBlank(request.getContent()), Answer::getContent,
+            request.getContent());
         // 扩展信息
-        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), Answer::getExtendInfo, request.getExtendInfo());
+        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), Answer::getExtendInfo,
+            request.getExtendInfo());
         // 创建人
-        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), Answer::getCreateBy, request.getCreateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), Answer::getCreateBy,
+            request.getCreateBy());
         // 创建时间
         lqw.eq(request.getCreateTime() != null, Answer::getCreateTime, request.getCreateTime());
         // 创建时间 start
-        lqw.ge(request.getCreateTimeStart() != null, Answer::getCreateTime, request.getCreateTimeStart());
+        lqw.ge(request.getCreateTimeStart() != null, Answer::getCreateTime,
+            request.getCreateTimeStart());
         // 创建时间 end
-        lqw.le(request.getCreateTimeEnd() != null, Answer::getCreateTime, request.getCreateTimeEnd());
+        lqw.le(request.getCreateTimeEnd() != null, Answer::getCreateTime,
+            request.getCreateTimeEnd());
         // 修改人
-        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), Answer::getUpdateBy, request.getUpdateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), Answer::getUpdateBy,
+            request.getUpdateBy());
         // 修改时间
         lqw.eq(request.getUpdateTime() != null, Answer::getUpdateTime, request.getUpdateTime());
         // 修改时间 start
-        lqw.ge(request.getUpdateTimeStart() != null, Answer::getUpdateTime, request.getUpdateTimeStart());
+        lqw.ge(request.getUpdateTimeStart() != null, Answer::getUpdateTime,
+            request.getUpdateTimeStart());
         // 修改时间 end
-        lqw.le(request.getUpdateTimeEnd() != null, Answer::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.le(request.getUpdateTimeEnd() != null, Answer::getUpdateTime,
+            request.getUpdateTimeEnd());
         lqw.orderByDesc(Answer::getId);
         return answerMapper.selectPage(request, lqw);
+    }
+
+    /**
+     * 根据用户ID和题目ID列表查询
+     *
+     * @param userId
+     * @param questionIds
+     * @return
+     */
+    public List<Answer> queryByUserIdAndQuestionIds(String userId, List<String> questionIds) {
+        return new LambdaQueryChainWrapper<>(baseMapper).eq(Answer::getUserId, userId)
+            .in(Answer::getQuestionId, questionIds).list();
     }
 
 }

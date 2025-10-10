@@ -36,6 +36,16 @@ public class LoginContext implements Serializable {
         return loginContextThreadLocal.get();
     }
 
+    public static boolean isLogin() {
+        return loginContextThreadLocal.get() != null
+               && loginContextThreadLocal.get().getUserLoginInfo() != null
+               && loginContextThreadLocal.get().getUserLoginInfo().getUserId() != null;
+    }
+
+    public static String getLoginUserId() {
+        return loginContextThreadLocal.get().getUserLoginInfo().getUserId();
+    }
+
     public static void set(LoginContext loginContext) {
         loginContextThreadLocal.set(loginContext);
     }

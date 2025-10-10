@@ -135,6 +135,8 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> {
             request.getQuestionLevel());
         // 标签
         lqw.eq(StringUtils.isNotBlank(request.getTags()), Question::getTags, request.getTags());
+        // 题号
+        lqw.eq(request.getQuestionNo() != null, Question::getQuestionNo, request.getQuestionNo());
         // 访问量
         lqw.eq(request.getViewCnt() != null, Question::getViewCnt, request.getViewCnt());
         // 提交答案量

@@ -2,6 +2,7 @@ package com.xxc.xia.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xxc.xia.common.enums.Logical;
 import com.xxc.xia.common.utils.AssertUtils;
 import com.xxc.xia.common.wrapper.PageWrapper;
 import com.xxc.xia.convert.QuestionCollectionConvert;
@@ -13,6 +14,7 @@ import com.xxc.xia.entity.QuestionCollection;
 import com.xxc.xia.entity.QuestionQcRel;
 import com.xxc.xia.mapper.QuestionCollectionMapper;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -192,6 +194,22 @@ public class QuestionCollectionServiceImpl extends
         // 修改时间 end
         lqw.le(request.getUpdateTimeEnd() != null, QuestionCollection::getUpdateTime,
             request.getUpdateTimeEnd());
+        if (CollectionUtils.isNotEmpty(request.getTagIds())) {
+            if (Logical.AND.name().equalsIgnoreCase(request.getTagIdsOpType())) {
+                lqw.and(qw -> {
+                    for (String tagId : request.getTagIds()) {
+                        qw.apply("find_in_set({0}, `tags`)", tagId);
+                    }
+                });
+            } else {
+                lqw.and(qw -> {
+                    for (String tagId : request.getTagIds()) {
+                        qw.or().apply("find_in_set({0}, `tags`)", tagId);
+                    }
+                });
+            }
+
+        }
         lqw.orderByDesc(QuestionCollection::getId);
         return questionCollectionMapper.selectPage(request, lqw);
     }

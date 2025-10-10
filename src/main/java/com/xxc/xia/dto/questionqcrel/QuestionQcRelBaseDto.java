@@ -31,6 +31,12 @@ public class QuestionQcRelBaseDto implements Serializable {
     private String qcId;
 
     /**
+     * 题号
+     */
+    @Schema(description = "题号")
+    private Integer questionNo;
+
+    /**
      * 扩展信息
      */
     @Schema(description = "扩展信息")

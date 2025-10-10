@@ -37,6 +37,12 @@ public class QuestionQcRel extends BaseEntity {
     private String qcId;
 
     /**
+     * 题号
+     */
+    @TableField("question_no")
+    private Integer questionNo;
+
+    /**
      * 扩展信息
      */
     @TableField("extend_info")
