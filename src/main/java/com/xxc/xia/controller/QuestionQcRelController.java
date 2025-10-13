@@ -1,6 +1,7 @@
 package com.xxc.xia.controller;
 
 import com.xxc.xia.common.annotation.RequirePermissions;
+import com.xxc.xia.common.context.LoginContext;
 import com.xxc.xia.common.request.ListRequest;
 import com.xxc.xia.common.result.Result;
 import com.xxc.xia.common.result.ResultFactory;
@@ -10,8 +11,10 @@ import com.xxc.xia.dto.questionqcrel.QuestionQcRelCreateRequest;
 import com.xxc.xia.dto.questionqcrel.QuestionQcRelPageRequest;
 import com.xxc.xia.dto.questionqcrel.QuestionQcRelResult;
 import com.xxc.xia.dto.questionqcrel.QuestionQcRelUpdateRequest;
+import com.xxc.xia.entity.Answer;
 import com.xxc.xia.entity.Question;
 import com.xxc.xia.entity.QuestionQcRel;
+import com.xxc.xia.service.impl.AnswerServiceImpl;
 import com.xxc.xia.service.impl.QuestionQcRelServiceImpl;
 import com.xxc.xia.service.impl.QuestionServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 题目题集关联 controller
@@ -44,6 +49,9 @@ public class QuestionQcRelController {
 
     @Autowired
     private QuestionServiceImpl      questionService;
+
+    @Autowired
+    private AnswerServiceImpl        answerService;
 
     /**
      * 创建一个
@@ -135,11 +143,26 @@ public class QuestionQcRelController {
         PageWrapper<QuestionQcRel> pageWrapper = questionQcRelService.getQuestionQcRelPage(request);
         PageWrapper<QuestionQcRelResult> result = QuestionQcRelConvert.convertPage(pageWrapper);
         if (result.getTotal() > 0) {
+            // 获取题目信息
             for (QuestionQcRelResult item : result.getData()) {
                 Question question = questionService.getQuestion(Long.valueOf(item.getQuestionId()));
                 if (question != null) {
                     item.setTitle(question.getTitle());
                     item.setContent(question.getContent());
+                    item.setQuestionLevel(question.getQuestionLevel());
+                }
+            }
+            // 获取用户答题信息
+            if (request.isNeedAlreadyAnswerFlag() && LoginContext.isLogin()) {
+                String userId = LoginContext.getLoginUserId();
+                List<String> questionIds = pageWrapper.getData().stream()
+                    .map(QuestionQcRel::getQuestionId).map(String::valueOf).distinct().toList();
+                List<Answer> answerList = answerService.queryByUserIdAndQuestionIds(userId,
+                    questionIds);
+                Set<String> alreadyAnswerQuestionIds = answerList.stream()
+                    .map(Answer::getQuestionId).collect(Collectors.toSet());
+                for (QuestionQcRelResult item : result.getData()) {
+                    item.setAlreadyAnswer(alreadyAnswerQuestionIds.contains(item.getQuestionId()));
                 }
             }
         }

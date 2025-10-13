@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xxc.xia.common.exception.BizException;
 import com.xxc.xia.common.utils.AssertUtils;
 import com.xxc.xia.common.wrapper.PageWrapper;
 import com.xxc.xia.convert.QuestionQcRelConvert;
@@ -153,7 +154,20 @@ public class QuestionQcRelServiceImpl extends ServiceImpl<QuestionQcRelMapper, Q
         // 修改时间 end
         lqw.le(request.getUpdateTimeEnd() != null, QuestionQcRel::getUpdateTime,
             request.getUpdateTimeEnd());
-        lqw.orderByDesc(QuestionQcRel::getId);
+        String sortCol = request.getSortCol();
+        String sortType = request.getSortType();
+        if (StringUtils.isNoneBlank(sortCol, sortType)) {
+            switch (sortCol) {
+                case "question_no":
+                    lqw.orderBy(true, "asc".equalsIgnoreCase(sortType),
+                        QuestionQcRel::getQuestionNo);
+                    break;
+                default:
+                    lqw.orderByDesc(QuestionQcRel::getId);
+            }
+        } else {
+            lqw.orderByDesc(QuestionQcRel::getId);
+        }
         return questionQcRelMapper.selectPage(request, lqw);
     }
 

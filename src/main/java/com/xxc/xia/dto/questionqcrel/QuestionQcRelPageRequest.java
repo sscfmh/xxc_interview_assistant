@@ -111,4 +111,9 @@ public class QuestionQcRelPageRequest extends PageRequest {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTimeEnd;
 
+    /**
+     * 需要是否已回答标识
+     */
+    private boolean needAlreadyAnswerFlag;
+
 }

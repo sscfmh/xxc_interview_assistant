@@ -48,12 +48,24 @@ public class QuestionQcRelResult extends QuestionQcRelBaseDto {
     /**
      * 标题
      */
-    @TableField("title")
+    @Schema(description = "title")
     private String title;
 
     /**
      * 内容
      */
-    @TableField("content")
+    @Schema(description = "content")
     private String content;
+
+    /**
+     * 题目等级
+     */
+    @Schema(description = "question_level")
+    private String questionLevel;
+
+    /**
+     * 是否已提交答案
+     */
+    @Schema(description = "是否已提交答案")
+    private boolean alreadyAnswer;
 }

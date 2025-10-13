@@ -16,6 +16,8 @@ import lombok.Data;
 public class PageRequest extends BaseRequest {
     private static final Integer PAGE_NO   = 1;
     private static final Integer PAGE_SIZE = 10;
+    private static final String  SORT_COL  = "id";
+    private static final String  SORT_TYPE = "DESC";
 
     @Schema(description = "页码，从 1 开始")
     @NotNull(message = "页码不能为空")
@@ -27,4 +29,8 @@ public class PageRequest extends BaseRequest {
     @Min(value = 1, message = "每页条数最小值为 1")
     @Max(value = 100, message = "每页条数最大值为 100")
     private Integer              pageSize  = PAGE_SIZE;
+
+    private String               sortCol   = SORT_COL;
+
+    private String               sortType  = SORT_TYPE;
 }
