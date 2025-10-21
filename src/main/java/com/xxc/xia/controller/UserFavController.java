@@ -151,4 +151,32 @@ public class UserFavController {
         Long id = userFavService.createUserFav(request);
         return ResultFactory.success(id);
     }
+
+    @Operation(summary = "查询用户是否收藏(题目/题集)")
+    @RequirePermissions(value = { "common:login" })
+    @PostMapping("/queryUserFavItem")
+    public Result<UserFavResult> queryUserFavItem(@RequestBody @Validated UserFavCreateRequest request) {
+        String userId = LoginContext.getLoginUserId();
+        Set<String> supportedType = new HashSet<>();
+        supportedType.add(BizTypeEnum.FAV_QUESTION.name());
+        supportedType.add(BizTypeEnum.FAV_QC.name());
+        AssertUtils.isTrue(supportedType.contains(request.getBizType()), "不支持的收藏类型");
+        UserFav userFav = userFavService.queryUserFav(BizTypeEnum.getByName(request.getBizType()),
+            request.getBizId(), userId);
+        return ResultFactory.success(UserFavConvert.convert(userFav));
+    }
+
+    @Operation(summary = "用户取消收藏(题目/题集)")
+    @RequirePermissions(value = { "common:login" })
+    @PostMapping("/userCancelFavItem")
+    public Result<Boolean> userCancelFavItem(@RequestBody @Validated UserFavCreateRequest request) {
+        String userId = LoginContext.getLoginUserId();
+        Set<String> supportedType = new HashSet<>();
+        supportedType.add(BizTypeEnum.FAV_QUESTION.name());
+        supportedType.add(BizTypeEnum.FAV_QC.name());
+        AssertUtils.isTrue(supportedType.contains(request.getBizType()), "不支持的收藏类型");
+        boolean res = userFavService.cancelFav(BizTypeEnum.getByName(request.getBizType()),
+            request.getBizId(), userId);
+        return ResultFactory.success(res);
+    }
 }

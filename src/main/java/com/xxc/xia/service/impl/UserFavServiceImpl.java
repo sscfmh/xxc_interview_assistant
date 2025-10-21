@@ -1,17 +1,22 @@
 package com.xxc.xia.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xxc.xia.common.wrapper.PageWrapper;
+import com.xxc.xia.common.enums.BizTypeEnum;
 import com.xxc.xia.common.utils.AssertUtils;
+import com.xxc.xia.common.wrapper.PageWrapper;
 import com.xxc.xia.convert.UserFavConvert;
-import com.xxc.xia.dto.userfav.*;
+import com.xxc.xia.dto.userfav.UserFavCreateRequest;
+import com.xxc.xia.dto.userfav.UserFavPageRequest;
+import com.xxc.xia.dto.userfav.UserFavUpdateRequest;
 import com.xxc.xia.entity.UserFav;
 import com.xxc.xia.mapper.UserFavMapper;
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +59,7 @@ public class UserFavServiceImpl extends ServiceImpl<UserFavMapper, UserFav> {
         // 校验存在
         checkUserFavExists(request.getId());
         // 更新
-        UserFav updateObj =  UserFavConvert.convert(request);
+        UserFav updateObj = UserFavConvert.convert(request);
         updateObj.setUpdateTime(new Date());
         userFavMapper.updateById(updateObj);
     }
@@ -113,31 +118,67 @@ public class UserFavServiceImpl extends ServiceImpl<UserFavMapper, UserFav> {
         // 主键ID
         lqw.eq(request.getId() != null, UserFav::getId, request.getId());
         // 业务类型
-        lqw.eq(StringUtils.isNotBlank(request.getBizType()), UserFav::getBizType, request.getBizType());
+        lqw.eq(StringUtils.isNotBlank(request.getBizType()), UserFav::getBizType,
+            request.getBizType());
         // 业务ID
         lqw.eq(StringUtils.isNotBlank(request.getBizId()), UserFav::getBizId, request.getBizId());
         // 用户ID
-        lqw.eq(StringUtils.isNotBlank(request.getUserId()), UserFav::getUserId, request.getUserId());
+        lqw.eq(StringUtils.isNotBlank(request.getUserId()), UserFav::getUserId,
+            request.getUserId());
         // 扩展信息
-        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), UserFav::getExtendInfo, request.getExtendInfo());
+        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), UserFav::getExtendInfo,
+            request.getExtendInfo());
         // 创建人
-        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), UserFav::getCreateBy, request.getCreateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), UserFav::getCreateBy,
+            request.getCreateBy());
         // 创建时间
         lqw.eq(request.getCreateTime() != null, UserFav::getCreateTime, request.getCreateTime());
         // 创建时间 start
-        lqw.ge(request.getCreateTimeStart() != null, UserFav::getCreateTime, request.getCreateTimeStart());
+        lqw.ge(request.getCreateTimeStart() != null, UserFav::getCreateTime,
+            request.getCreateTimeStart());
         // 创建时间 end
-        lqw.le(request.getCreateTimeEnd() != null, UserFav::getCreateTime, request.getCreateTimeEnd());
+        lqw.le(request.getCreateTimeEnd() != null, UserFav::getCreateTime,
+            request.getCreateTimeEnd());
         // 修改人
-        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), UserFav::getUpdateBy, request.getUpdateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), UserFav::getUpdateBy,
+            request.getUpdateBy());
         // 修改时间
         lqw.eq(request.getUpdateTime() != null, UserFav::getUpdateTime, request.getUpdateTime());
         // 修改时间 start
-        lqw.ge(request.getUpdateTimeStart() != null, UserFav::getUpdateTime, request.getUpdateTimeStart());
+        lqw.ge(request.getUpdateTimeStart() != null, UserFav::getUpdateTime,
+            request.getUpdateTimeStart());
         // 修改时间 end
-        lqw.le(request.getUpdateTimeEnd() != null, UserFav::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.le(request.getUpdateTimeEnd() != null, UserFav::getUpdateTime,
+            request.getUpdateTimeEnd());
         lqw.orderByDesc(UserFav::getId);
         return userFavMapper.selectPage(request, lqw);
+    }
+
+    /**
+     * 查询UserFav
+     *
+     * @param bizTypeEnum
+     * @param bizId
+     * @param userId
+     * @return
+     */
+    public UserFav queryUserFav(BizTypeEnum bizTypeEnum, String bizId, String userId) {
+        return new LambdaQueryChainWrapper<>(baseMapper).eq(UserFav::getBizType, bizTypeEnum.name())
+            .eq(UserFav::getBizId, bizId).eq(UserFav::getUserId, userId).one();
+    }
+
+    /**
+     * 取消收藏
+     *
+     * @param bizTypeEnum
+     * @param bizId
+     * @param userId
+     * @return
+     */
+    public boolean cancelFav(BizTypeEnum bizTypeEnum, String bizId, String userId) {
+        return new LambdaUpdateChainWrapper<>(baseMapper)
+            .eq(UserFav::getBizType, bizTypeEnum.name()).eq(UserFav::getBizId, bizId)
+            .eq(UserFav::getUserId, userId).remove();
     }
 
 }
