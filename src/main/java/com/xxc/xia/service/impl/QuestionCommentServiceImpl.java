@@ -23,7 +23,8 @@ import java.util.List;
  * @create 2025-09-27 12:09:35
  */
 @Service
-public class QuestionCommentServiceImpl extends ServiceImpl<QuestionCommentMapper, QuestionComment> {
+public class QuestionCommentServiceImpl extends
+                                        ServiceImpl<QuestionCommentMapper, QuestionComment> {
 
     @Resource
     private QuestionCommentMapper questionCommentMapper;
@@ -54,7 +55,7 @@ public class QuestionCommentServiceImpl extends ServiceImpl<QuestionCommentMappe
         // 校验存在
         checkQuestionCommentExists(request.getId());
         // 更新
-        QuestionComment updateObj =  QuestionCommentConvert.convert(request);
+        QuestionComment updateObj = QuestionCommentConvert.convert(request);
         updateObj.setUpdateTime(new Date());
         questionCommentMapper.updateById(updateObj);
     }
@@ -113,41 +114,67 @@ public class QuestionCommentServiceImpl extends ServiceImpl<QuestionCommentMappe
         // 主键ID
         lqw.eq(request.getId() != null, QuestionComment::getId, request.getId());
         // 题目ID
-        lqw.eq(StringUtils.isNotBlank(request.getQuestionId()), QuestionComment::getQuestionId, request.getQuestionId());
+        lqw.eq(StringUtils.isNotBlank(request.getQuestionId()), QuestionComment::getQuestionId,
+            request.getQuestionId());
         // 用户ID
-        lqw.eq(StringUtils.isNotBlank(request.getUserId()), QuestionComment::getUserId, request.getUserId());
+        lqw.eq(StringUtils.isNotBlank(request.getUserId()), QuestionComment::getUserId,
+            request.getUserId());
         // 评论内容
-        lqw.eq(StringUtils.isNotBlank(request.getContent()), QuestionComment::getContent, request.getContent());
+        lqw.eq(StringUtils.isNotBlank(request.getContent()), QuestionComment::getContent,
+            request.getContent());
         // 评论层级
-        lqw.eq(StringUtils.isNotBlank(request.getCommentLevel()), QuestionComment::getCommentLevel, request.getCommentLevel());
+        lqw.eq(StringUtils.isNotBlank(request.getCommentLevel()), QuestionComment::getCommentLevel,
+            request.getCommentLevel());
         // 一级评论ID
-        lqw.eq(request.getFlCommentId() != null, QuestionComment::getFlCommentId, request.getFlCommentId());
+        lqw.eq(request.getFlCommentId() != null, QuestionComment::getFlCommentId,
+            request.getFlCommentId());
         // 回复ID
         lqw.eq(request.getReplyId() != null, QuestionComment::getReplyId, request.getReplyId());
         // 评论状态
-        lqw.eq(StringUtils.isNotBlank(request.getCommentStatus()), QuestionComment::getCommentStatus, request.getCommentStatus());
+        lqw.eq(StringUtils.isNotBlank(request.getCommentStatus()),
+            QuestionComment::getCommentStatus, request.getCommentStatus());
         // 点赞数量
         lqw.eq(request.getHeartCnt() != null, QuestionComment::getHeartCnt, request.getHeartCnt());
         // 扩展信息
-        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), QuestionComment::getExtendInfo, request.getExtendInfo());
+        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), QuestionComment::getExtendInfo,
+            request.getExtendInfo());
         // 创建人
-        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), QuestionComment::getCreateBy, request.getCreateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), QuestionComment::getCreateBy,
+            request.getCreateBy());
         // 创建时间
-        lqw.eq(request.getCreateTime() != null, QuestionComment::getCreateTime, request.getCreateTime());
+        lqw.eq(request.getCreateTime() != null, QuestionComment::getCreateTime,
+            request.getCreateTime());
         // 创建时间 start
-        lqw.ge(request.getCreateTimeStart() != null, QuestionComment::getCreateTime, request.getCreateTimeStart());
+        lqw.ge(request.getCreateTimeStart() != null, QuestionComment::getCreateTime,
+            request.getCreateTimeStart());
         // 创建时间 end
-        lqw.le(request.getCreateTimeEnd() != null, QuestionComment::getCreateTime, request.getCreateTimeEnd());
+        lqw.le(request.getCreateTimeEnd() != null, QuestionComment::getCreateTime,
+            request.getCreateTimeEnd());
         // 修改人
-        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), QuestionComment::getUpdateBy, request.getUpdateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), QuestionComment::getUpdateBy,
+            request.getUpdateBy());
         // 修改时间
-        lqw.eq(request.getUpdateTime() != null, QuestionComment::getUpdateTime, request.getUpdateTime());
+        lqw.eq(request.getUpdateTime() != null, QuestionComment::getUpdateTime,
+            request.getUpdateTime());
         // 修改时间 start
-        lqw.ge(request.getUpdateTimeStart() != null, QuestionComment::getUpdateTime, request.getUpdateTimeStart());
+        lqw.ge(request.getUpdateTimeStart() != null, QuestionComment::getUpdateTime,
+            request.getUpdateTimeStart());
         // 修改时间 end
-        lqw.le(request.getUpdateTimeEnd() != null, QuestionComment::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.le(request.getUpdateTimeEnd() != null, QuestionComment::getUpdateTime,
+            request.getUpdateTimeEnd());
         lqw.orderByDesc(QuestionComment::getId);
         return questionCommentMapper.selectPage(request, lqw);
     }
 
+    /**
+     * 添加点赞数量
+     *
+     * @param id
+     * @param delta
+     * @return
+     */
+    public boolean addHeartCnt(Long id, int delta) {
+        int res = questionCommentMapper.addCnt(id, delta);
+        return res > 0;
+    }
 }

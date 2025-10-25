@@ -1,0 +1,18 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xxc.xia.mapper.QuestionCommentMapper">
+
+    <update id="addCnt">
+        UPDATE `question_comment` SET `heart_cnt` = `heart_cnt` + #{heartCntDelta}
+        WHERE `id` = #{id}
+    </update>
+
+    <select id="selectCommentCntByDay">
+        SELECT DATE_FORMAT(`create_time`, '%Y-%m-%d') AS day, count(*) AS cnt FROM `question_comment`
+        GROUP BY day
+        ORDER BY day DESC LIMIT #{n}
+    </select>
+
+</mapper>

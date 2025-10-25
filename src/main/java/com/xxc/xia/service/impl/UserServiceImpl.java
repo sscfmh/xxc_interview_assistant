@@ -2,6 +2,7 @@ package com.xxc.xia.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xxc.xia.common.enums.RoleEnum;
 import com.xxc.xia.common.utils.AssertUtils;
 import com.xxc.xia.common.wrapper.PageWrapper;
 import com.xxc.xia.convert.UserConvert;
@@ -55,7 +56,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> {
         User user = UserConvert.convert(request);
         user.setCreateTime(new Date());
         user.setUpdateTime(new Date());
-        userMapper.insert(user);
+        transactionTemplate.executeWithoutResult(status -> {
+            userMapper.insert(user);
+            UserRoleRelCreateRequest createRequest = new UserRoleRelCreateRequest();
+            createRequest.setUserId(String.valueOf(user.getId()));
+            createRequest.setRoleKey(RoleEnum.NORMAL_USER.getCode());
+            userRoleRelService.createUserRoleRel(createRequest);
+        });
         // 返回
         return user.getId();
     }

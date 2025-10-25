@@ -167,4 +167,17 @@ public class QuestionCommentController {
         }
         return ResultFactory.success(data);
     }
+
+    @Operation(summary = "增加点赞数")
+    @RequirePermissions(value = { "common:login" })
+    @PostMapping("/addQuestionCommentHeartCnt")
+    public Result<QuestionCommentResult> addQuestionCommentHeartCnt(@RequestBody @Validated QuestionCommentUpdateRequest request) {
+        boolean res = questionCommentService.addHeartCnt(request.getId(), 1);
+        if (!res) {
+            return ResultFactory.error("操作失败");
+        }
+        QuestionComment questionComment = questionCommentService
+            .getQuestionComment(request.getId());
+        return ResultFactory.success(QuestionCommentConvert.convert(questionComment));
+    }
 }
