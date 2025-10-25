@@ -6,8 +6,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -43,7 +41,13 @@ public class SignInRecordPageRequest extends PageRequest {
      * 签到标识
      */
     @Schema(description = "签到标识")
-    private Integer yearMonth;
+    private Integer ym;
+
+    /**
+     * 签到标识
+     */
+    @Schema(description = "签到标识")
+    private Integer mark;
 
     /**
      * 扩展信息

@@ -21,4 +21,7 @@ public class AnswerUpdateRequest extends AnswerBaseDto {
      */
     @Schema(description = "主键ID")
     private Long id;
+
+    @Schema(description = "是否需要发送答题消息")
+    private boolean needSendAnswerQuestionMsg;
 }

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 签到记录 result
@@ -43,4 +44,9 @@ public class SignInRecordResult extends SignInRecordBaseDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
+
+    /**
+     * 签到标识日期列表
+     */
+    private List<String> markDateList;
 }

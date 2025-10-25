@@ -1,10 +1,16 @@
 package com.xxc.xia.convert;
 
-import com.xxc.xia.entity.SignInRecord;
-import com.xxc.xia.dto.signinrecord.*;
 import com.xxc.xia.common.wrapper.PageWrapper;
+import com.xxc.xia.dto.signinrecord.SignInRecordCreateRequest;
+import com.xxc.xia.dto.signinrecord.SignInRecordResult;
+import com.xxc.xia.dto.signinrecord.SignInRecordUpdateRequest;
+import com.xxc.xia.entity.SignInRecord;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 签到记录 convert
@@ -21,7 +27,8 @@ public class SignInRecordConvert {
         SignInRecord signInRecord = new SignInRecord();
         signInRecord.setBizType(signInRecordCreateRequest.getBizType());
         signInRecord.setBizId(signInRecordCreateRequest.getBizId());
-        signInRecord.setYearMonth(signInRecordCreateRequest.getYearMonth());
+        signInRecord.setYm(signInRecordCreateRequest.getYm());
+        signInRecord.setMark(signInRecordCreateRequest.getMark());
         signInRecord.setExtendInfo(signInRecordCreateRequest.getExtendInfo());
         signInRecord.setCreateBy(signInRecordCreateRequest.getCreateBy());
         signInRecord.setUpdateBy(signInRecordCreateRequest.getUpdateBy());
@@ -36,7 +43,8 @@ public class SignInRecordConvert {
         signInRecord.setId(signInRecordUpdateRequest.getId());
         signInRecord.setBizType(signInRecordUpdateRequest.getBizType());
         signInRecord.setBizId(signInRecordUpdateRequest.getBizId());
-        signInRecord.setYearMonth(signInRecordUpdateRequest.getYearMonth());
+        signInRecord.setYm(signInRecordUpdateRequest.getYm());
+        signInRecord.setMark(signInRecordUpdateRequest.getMark());
         signInRecord.setExtendInfo(signInRecordUpdateRequest.getExtendInfo());
         signInRecord.setCreateBy(signInRecordUpdateRequest.getCreateBy());
         signInRecord.setUpdateBy(signInRecordUpdateRequest.getUpdateBy());
@@ -51,7 +59,9 @@ public class SignInRecordConvert {
         signInRecordResult.setId(entity.getId());
         signInRecordResult.setBizType(entity.getBizType());
         signInRecordResult.setBizId(entity.getBizId());
-        signInRecordResult.setYearMonth(entity.getYearMonth());
+        signInRecordResult.setYm(entity.getYm());
+        signInRecordResult.setMark(entity.getMark());
+        signInRecordResult.setMarkDateList(parseMark(entity.getYm(), entity.getMark()));
         signInRecordResult.setExtendInfo(entity.getExtendInfo());
         signInRecordResult.setCreateBy(entity.getCreateBy());
         signInRecordResult.setCreateTime(entity.getCreateTime());
@@ -76,8 +86,26 @@ public class SignInRecordConvert {
         if (pw == null) {
             return null;
         }
-        PageWrapper<SignInRecordResult> resultPw = PageWrapper.build(pw.getTotal(), convertList(pw.getData()));
+        PageWrapper<SignInRecordResult> resultPw = PageWrapper.build(pw.getTotal(),
+            convertList(pw.getData()));
         return resultPw;
+    }
+
+    private static List<String> parseMark(String ym, Integer mark) {
+        if (StringUtils.isBlank(ym) || mark == null) {
+            return Collections.emptyList();
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        List<String> res = new ArrayList<>();
+        int dn = 1;
+        while (mark > 0) {
+            if ((mark & 1) == 1) {
+                res.add(ym + StringUtils.leftPad(dn + "", 2, '0'));
+            }
+            dn++;
+            mark >>= 1;
+        }
+        return res;
     }
 
 }

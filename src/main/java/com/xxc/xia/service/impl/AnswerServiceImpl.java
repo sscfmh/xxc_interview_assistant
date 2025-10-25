@@ -18,6 +18,7 @@ import com.xxc.xia.mapper.AnswerMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -78,7 +79,13 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, Answer> {
         // 更新
         Answer updateObj = AnswerConvert.convert(request);
         updateObj.setUpdateTime(new Date());
-        answerMapper.updateById(updateObj);
+        transactionTemplate.executeWithoutResult(status -> {
+            answerMapper.updateById(updateObj);
+            if (request.isNeedSendAnswerQuestionMsg()) {
+                JSONObject msg = (JSONObject) JSON.toJSON(updateObj);
+                localMsgClient.sendMsg(MsgTypeEnum.USER_ANSWER_QUESTION, msg);
+            }
+        });
     }
 
     /**
@@ -181,6 +188,40 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, Answer> {
     public List<Answer> queryByUserIdAndQuestionIds(String userId, List<String> questionIds) {
         return new LambdaQueryChainWrapper<>(baseMapper).eq(Answer::getUserId, userId)
             .in(Answer::getQuestionId, questionIds).list();
+    }
+
+    /**
+     * userCommitQuestionAnswer
+     * @param request
+     * @return
+     */
+    public Long userCommitQuestionAnswer(AnswerCreateRequest request) {
+        Answer dbAnswer = new LambdaQueryChainWrapper<>(baseMapper)
+            .eq(Answer::getUserId, request.getUserId())
+            .eq(Answer::getQuestionId, request.getQuestionId()).one();
+        if (dbAnswer != null) {
+            AnswerUpdateRequest updateRequest = new AnswerUpdateRequest();
+            updateRequest.setId(dbAnswer.getId());
+            updateRequest.setUserId(request.getUserId());
+            updateRequest.setContent(request.getContent());
+            updateRequest.setNeedSendAnswerQuestionMsg(true);
+            updateAnswer(updateRequest);
+            return dbAnswer.getId();
+        }
+        try {
+            return createAnswer(request);
+        } catch (DuplicateKeyException e) {
+            dbAnswer = new LambdaQueryChainWrapper<>(baseMapper)
+                .eq(Answer::getUserId, request.getUserId())
+                .eq(Answer::getQuestionId, request.getQuestionId()).one();
+            AssertUtils.notNull(dbAnswer, "answer 不存在");
+            AnswerUpdateRequest updateRequest = new AnswerUpdateRequest();
+            updateRequest.setId(dbAnswer.getId());
+            updateRequest.setUserId(request.getUserId());
+            updateRequest.setContent(request.getContent());
+            updateAnswer(updateRequest);
+            return dbAnswer.getId();
+        }
     }
 
 }

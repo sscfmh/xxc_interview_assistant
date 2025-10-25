@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -43,7 +44,12 @@ public class LoginContext implements Serializable {
     }
 
     public static String getLoginUserId() {
-        return loginContextThreadLocal.get().getUserLoginInfo().getUserId();
+        return Optional.ofNullable(getUserLoginInfo()).map(UserLoginInfo::getUserId).orElse(null);
+    }
+
+    public static UserLoginInfo getUserLoginInfo() {
+        return Optional.ofNullable(loginContextThreadLocal.get()).map(x -> x.userLoginInfo)
+            .orElse(null);
     }
 
     public static void set(LoginContext loginContext) {

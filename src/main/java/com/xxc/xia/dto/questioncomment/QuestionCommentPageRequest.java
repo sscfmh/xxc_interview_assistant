@@ -141,4 +141,10 @@ public class QuestionCommentPageRequest extends PageRequest {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTimeEnd;
 
+    /**
+     * 是否需要用户信息
+     */
+    @Schema(description = "是否需要用户信息")
+    private boolean needUserInfo;
+
 }

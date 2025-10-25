@@ -2,12 +2,7 @@ package com.xxc.xia.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
 import lombok.*;
-
-import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * 签到记录
@@ -37,10 +32,16 @@ public class SignInRecord extends BaseEntity {
     private String bizId;
 
     /**
+     * 年月
+     */
+    @TableField("ym")
+    private String ym;
+
+    /**
      * 签到标识
      */
-    @TableField("year_month")
-    private Integer yearMonth;
+    @TableField("mark")
+    private Integer mark;
 
     /**
      * 扩展信息

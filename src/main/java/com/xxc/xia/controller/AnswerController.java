@@ -12,6 +12,7 @@ import com.xxc.xia.dto.answer.AnswerCreateRequest;
 import com.xxc.xia.dto.answer.AnswerPageRequest;
 import com.xxc.xia.dto.answer.AnswerResult;
 import com.xxc.xia.dto.answer.AnswerUpdateRequest;
+import com.xxc.xia.dto.answer.QueryUserCommitAnswerRequest;
 import com.xxc.xia.entity.Answer;
 import com.xxc.xia.service.impl.AnswerServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -140,10 +141,10 @@ public class AnswerController {
      * @param request
      * @return
      */
-    @Operation(summary = "用户提交问题")
+    @Operation(summary = "用户提交问题答案")
     @RequirePermissions(value = { "common:login" })
-    @PostMapping("/userAnswerQuestion")
-    public Result<String> userAnswerQuestion(@RequestBody @Validated AnswerCreateRequest request) {
+    @PostMapping("/userCommitQuestionAnswer")
+    public Result<String> userCommitQuestionAnswer(@RequestBody @Validated AnswerCreateRequest request) {
         String userId = LoginContext.getLoginUserId();
         request.setUserId(userId);
         request.setNeedSendAnswerQuestionMsg(true);
@@ -151,7 +152,18 @@ public class AnswerController {
         request.setUpdateBy(userId);
         AssertUtils.notBlank(request.getContent(), "内容不能为空");
         AssertUtils.notBlank(request.getQuestionId(), "题目ID不能为空");
-        Long id = answerService.createAnswer(request);
+        Long id = answerService.userCommitQuestionAnswer(request);
         return ResultFactory.success(String.valueOf(id));
+    }
+
+    @Operation(summary = "查询用户提交答案")
+    @RequirePermissions(value = { "common:login" })
+    @PostMapping("/queryUserCommitAnswer")
+    public Result<AnswerResult> queryUserCommitAnswer(@RequestBody @Validated QueryUserCommitAnswerRequest request) {
+        String userId = LoginContext.getLoginUserId();
+        List<Answer> answerList = answerService.queryByUserIdAndQuestionIds(userId,
+            List.of(request.getQuestionId()));
+        return ResultFactory
+            .success(answerList.stream().findFirst().map(AnswerConvert::convert).orElse(null));
     }
 }

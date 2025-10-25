@@ -43,4 +43,10 @@ public class QuestionCommentResult extends QuestionCommentBaseDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
+
+    @Schema(description = "用户头像")
+    private String avatar;
+
+    @Schema(description = "用户昵称")
+    private String nickName;
 }

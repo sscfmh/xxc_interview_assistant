@@ -1,17 +1,24 @@
 package com.xxc.xia.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xxc.xia.common.wrapper.PageWrapper;
+import com.xxc.xia.common.enums.BizTypeEnum;
 import com.xxc.xia.common.utils.AssertUtils;
+import com.xxc.xia.common.utils.DateUtils;
+import com.xxc.xia.common.wrapper.PageWrapper;
 import com.xxc.xia.convert.SignInRecordConvert;
-import com.xxc.xia.dto.signinrecord.*;
+import com.xxc.xia.dto.signinrecord.SignInRecordCreateRequest;
+import com.xxc.xia.dto.signinrecord.SignInRecordPageRequest;
+import com.xxc.xia.dto.signinrecord.SignInRecordUpdateRequest;
 import com.xxc.xia.entity.SignInRecord;
 import com.xxc.xia.mapper.SignInRecordMapper;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +30,7 @@ import java.util.List;
  * @create 2025-09-27 12:09:35
  */
 @Service
+@Slf4j
 public class SignInRecordServiceImpl extends ServiceImpl<SignInRecordMapper, SignInRecord> {
 
     @Resource
@@ -54,7 +62,7 @@ public class SignInRecordServiceImpl extends ServiceImpl<SignInRecordMapper, Sig
         // 校验存在
         checkSignInRecordExists(request.getId());
         // 更新
-        SignInRecord updateObj =  SignInRecordConvert.convert(request);
+        SignInRecord updateObj = SignInRecordConvert.convert(request);
         updateObj.setUpdateTime(new Date());
         signInRecordMapper.updateById(updateObj);
     }
@@ -113,31 +121,94 @@ public class SignInRecordServiceImpl extends ServiceImpl<SignInRecordMapper, Sig
         // 主键ID
         lqw.eq(request.getId() != null, SignInRecord::getId, request.getId());
         // 业务类型
-        lqw.eq(StringUtils.isNotBlank(request.getBizType()), SignInRecord::getBizType, request.getBizType());
+        lqw.eq(StringUtils.isNotBlank(request.getBizType()), SignInRecord::getBizType,
+            request.getBizType());
         // 业务ID
-        lqw.eq(StringUtils.isNotBlank(request.getBizId()), SignInRecord::getBizId, request.getBizId());
+        lqw.eq(StringUtils.isNotBlank(request.getBizId()), SignInRecord::getBizId,
+            request.getBizId());
         // 签到标识
-        lqw.eq(request.getYearMonth() != null, SignInRecord::getYearMonth, request.getYearMonth());
+        lqw.eq(request.getYm() != null, SignInRecord::getYm, request.getYm());
         // 扩展信息
-        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), SignInRecord::getExtendInfo, request.getExtendInfo());
+        lqw.eq(StringUtils.isNotBlank(request.getExtendInfo()), SignInRecord::getExtendInfo,
+            request.getExtendInfo());
         // 创建者
-        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), SignInRecord::getCreateBy, request.getCreateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getCreateBy()), SignInRecord::getCreateBy,
+            request.getCreateBy());
         // 创建时间
-        lqw.eq(request.getCreateTime() != null, SignInRecord::getCreateTime, request.getCreateTime());
+        lqw.eq(request.getCreateTime() != null, SignInRecord::getCreateTime,
+            request.getCreateTime());
         // 创建时间 start
-        lqw.ge(request.getCreateTimeStart() != null, SignInRecord::getCreateTime, request.getCreateTimeStart());
+        lqw.ge(request.getCreateTimeStart() != null, SignInRecord::getCreateTime,
+            request.getCreateTimeStart());
         // 创建时间 end
-        lqw.le(request.getCreateTimeEnd() != null, SignInRecord::getCreateTime, request.getCreateTimeEnd());
+        lqw.le(request.getCreateTimeEnd() != null, SignInRecord::getCreateTime,
+            request.getCreateTimeEnd());
         // 更新者
-        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), SignInRecord::getUpdateBy, request.getUpdateBy());
+        lqw.eq(StringUtils.isNotBlank(request.getUpdateBy()), SignInRecord::getUpdateBy,
+            request.getUpdateBy());
         // 更新时间
-        lqw.eq(request.getUpdateTime() != null, SignInRecord::getUpdateTime, request.getUpdateTime());
+        lqw.eq(request.getUpdateTime() != null, SignInRecord::getUpdateTime,
+            request.getUpdateTime());
         // 更新时间 start
-        lqw.ge(request.getUpdateTimeStart() != null, SignInRecord::getUpdateTime, request.getUpdateTimeStart());
+        lqw.ge(request.getUpdateTimeStart() != null, SignInRecord::getUpdateTime,
+            request.getUpdateTimeStart());
         // 更新时间 end
-        lqw.le(request.getUpdateTimeEnd() != null, SignInRecord::getUpdateTime, request.getUpdateTimeEnd());
+        lqw.le(request.getUpdateTimeEnd() != null, SignInRecord::getUpdateTime,
+            request.getUpdateTimeEnd());
         lqw.orderByDesc(SignInRecord::getId);
         return signInRecordMapper.selectPage(request, lqw);
+    }
+
+    /**
+     * 创建签到记录
+     *
+     * @param bizTypeEnum 业务类型
+     * @param bizId       业务ID
+     * @param date        签到时间
+     */
+    public void createRecord(BizTypeEnum bizTypeEnum, String bizId, Date date) {
+        String ym = DateUtils.ym(date);
+        SignInRecord dbSignInRecord = new LambdaQueryChainWrapper<>(baseMapper)
+            .eq(SignInRecord::getBizType, bizTypeEnum.name()).eq(SignInRecord::getBizId, bizId)
+            .eq(SignInRecord::getYm, ym).one();
+        String dstr = DateUtils.d(date);
+        int d = Integer.parseInt(dstr) - 1;
+        int m = 1 << d;
+        if (dbSignInRecord != null) {
+            if ((dbSignInRecord.getMark() | m) == dbSignInRecord.getMark()) {
+                return;
+            }
+            dbSignInRecord.setMark(dbSignInRecord.getMark() | m);
+            SignInRecordUpdateRequest updateRequest = new SignInRecordUpdateRequest();
+            updateRequest.setId(dbSignInRecord.getId());
+            updateRequest.setMark(dbSignInRecord.getMark() | m);
+            updateSignInRecord(updateRequest);
+            return;
+        }
+        SignInRecordCreateRequest createRequest = new SignInRecordCreateRequest();
+        createRequest.setBizType(bizTypeEnum.name());
+        createRequest.setBizId(bizId);
+        createRequest.setYm(ym);
+        createRequest.setMark(m);
+        try {
+            createSignInRecord(createRequest);
+        } catch (DuplicateKeyException e) {
+            createRecord(bizTypeEnum, bizId, date);
+        }
+    }
+
+    /**
+     * 查询 by unique key
+     *
+     * @param bizTypeEnum
+     * @param bizId
+     * @param date
+     * @return
+     */
+    public SignInRecord queryByUK(BizTypeEnum bizTypeEnum, String bizId, Date date) {
+        return new LambdaQueryChainWrapper<>(baseMapper)
+            .eq(SignInRecord::getBizType, bizTypeEnum.name()).eq(SignInRecord::getBizId, bizId)
+            .eq(SignInRecord::getYm, DateUtils.ym(date)).one();
     }
 
 }

@@ -1,13 +1,9 @@
 package com.xxc.xia.dto.signinrecord;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * 签到记录 baseDto
@@ -31,10 +27,16 @@ public class SignInRecordBaseDto implements Serializable {
     private String bizId;
 
     /**
+     * 年月
+     */
+    @Schema(description = "年月")
+    private String ym;
+
+    /**
      * 签到标识
      */
     @Schema(description = "签到标识")
-    private Integer yearMonth;
+    private Integer mark;
 
     /**
      * 扩展信息

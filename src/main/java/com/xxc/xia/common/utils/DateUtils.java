@@ -1,5 +1,7 @@
 package com.xxc.xia.common.utils;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
+
 import java.util.Date;
 
 /**
@@ -16,5 +18,17 @@ public class DateUtils {
         if (date == null)
             date = new Date();
         return new Date(date.getTime() + n * 24 * 60 * 60 * 1000L);
+    }
+
+    public static String ym(Date date) {
+        if (date == null)
+            date = new Date();
+        return DateFormatUtils.format(date, "yyyyMM");
+    }
+
+    public static String d(Date date) {
+        if (date == null)
+            date = new Date();
+        return DateFormatUtils.format(date, "dd");
     }
 }
